@@ -100,7 +100,7 @@ class ControlSystem(object):
         for r in self.rules:
             if r.label in labels:
                 raise ValueError("Input rule cannot have same label, '{0}', "
-                                 "as any other rule.".format(r.label))
+                                 "as any other rule.".format(str(r.label)))
             labels.append(r.label)
 
         # Combine the two graphs, which may not be disjoint
@@ -178,7 +178,7 @@ class _InputAcceptor(object):
                     warn("Input array is shape {0}, which is different from "
                          "previous array(s) which were {1}.  This may cause "
                          "problems, unless you are replacing all "
-                         "inputs.".format(value.shape, self.sim._array_shape))
+                         "inputs.".format(str(value.shape), self.sim._array_shape))
             self.sim._array_shape = value.shape
         else:
             # Input isn't an array, but we saw arrays before... reset!
@@ -219,7 +219,7 @@ class _InputAcceptor(object):
         current_inputs = self._get_inputs()
         out = ""
         for key, val in current_inputs.items():
-            out += "{0} : {1}\n".format(key, val)
+            out += "{0} : {1}\n".format(str(key), val)
         return out
 
     def _update_to_current(self):
@@ -501,9 +501,9 @@ class ControlSystemSimulation(object):
         print(" Antecedents ")
         print("=============")
         for v in self.ctrl.antecedents:
-            print("{0:<35} = {1}".format(v, v.input[self]))
+            print("{0:<35} = {1}".format(str(v), v.input[self]))
             for term in v.terms.values():
-                print("  - {0:<32}: {1}".format(term.label,
+                print("  - {0:<32}: {1}".format(str(term.label),
                                                 term.membership_value[self]))
         print("")
         print("=======")
@@ -518,15 +518,15 @@ class ControlSystemSimulation(object):
             print("  Aggregation (IF-clause):")
             for term in r.antecedent_terms:
                 assert isinstance(term, Term)
-                print("  - {0:<55}: {1}".format(term.full_label,
+                print("  - {0:<55}: {1}".format(str(term.full_label),
                                                 term.membership_value[self]))
-            print("    {0:>54} = {1}".format(r.antecedent,
+            print("    {0:>54} = {1}".format(str(r.antecedent),
                                              r.aggregate_firing[self]))
 
             print("  Activation (THEN-clause):")
             for c in r.consequent:
                 assert isinstance(c, WeightedTerm)
-                print("    {0:>54} : {1}".format(c,
+                print("    {0:>54} : {1}".format(str(c),
                                                  c.activation[self]))
             print("")
         print("")
@@ -536,17 +536,17 @@ class ControlSystemSimulation(object):
         print("==============================")
         for c in self.ctrl.consequents:
             print("{0:<36} = {1}".format(
-                c, CrispValueCalculator(c, self).defuzz()))
+                str(c), CrispValueCalculator(c, self).defuzz()))
 
             for term in c.terms.values():
                 print("  %s:" % term.label)
                 for cut_rule, cut_value in term.cuts[self].items():
                     if cut_rule not in rule_number.keys():
                         continue
-                    print("    {0:>32} : {1}".format(rule_number[cut_rule],
+                    print("    {0:>32} : {1}".format(str(rule_number[cut_rule]),
                                                      cut_value))
-                accu = "Accumulate using %s" % c.accumulation_method.func_name
-                print("    {0:>32} : {1}".format(accu,
+                accu = "Accumulate using %s" % c.accumulation_method.__name__
+                print("    {0:>32} : {1}".format(str(accu),
                                                  term.membership_value[self]))
             print("")
 
